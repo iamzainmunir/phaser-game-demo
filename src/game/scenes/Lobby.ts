@@ -259,6 +259,48 @@ export class Lobby extends Scene {
         this.gameTimeInput.style.backgroundColor = '#ffffff';
         this.gameTimeInput.style.border = '2px solid #4a9eff';
         this.gameTimeInput.style.borderRadius = '4px';
+        
+        // Add validation
+        this.gameTimeInput.addEventListener('input', () => {
+            const inputValue = this.gameTimeInput.value.trim();
+            if (inputValue === '' || inputValue === '0' || /^0+$/.test(inputValue)) {
+                this.gameTimeInput.value = '';
+                this.gameTimeInput.style.borderColor = '#ff6b6b';
+                return;
+            }
+            let value = parseInt(inputValue);
+            if (isNaN(value) || value < 60) {
+                this.gameTimeInput.style.borderColor = '#ff6b6b';
+            } else if (value > 1800) {
+                value = 1800;
+                this.gameTimeInput.value = '1800';
+                this.gameTimeInput.style.borderColor = '#4a9eff';
+            } else {
+                // Remove leading zeros
+                this.gameTimeInput.value = value.toString();
+                this.gameTimeInput.style.borderColor = '#4a9eff';
+            }
+        });
+        
+        this.gameTimeInput.addEventListener('blur', () => {
+            const inputValue = this.gameTimeInput.value.trim();
+            if (inputValue === '' || inputValue === '0' || /^0+$/.test(inputValue)) {
+                this.gameTimeInput.value = '60';
+                this.gameTimeInput.style.borderColor = '#4a9eff';
+                return;
+            }
+            let value = parseInt(inputValue);
+            if (isNaN(value) || value < 60) {
+                this.gameTimeInput.value = '60';
+            } else if (value > 1800) {
+                this.gameTimeInput.value = '1800';
+            } else {
+                // Remove leading zeros
+                this.gameTimeInput.value = value.toString();
+            }
+            this.gameTimeInput.style.borderColor = '#4a9eff';
+        });
+        
         document.body.appendChild(this.gameTimeInput);
 
         // Max Players (positioned above input field)
@@ -289,6 +331,48 @@ export class Lobby extends Scene {
         this.maxPlayersInput.style.backgroundColor = '#ffffff';
         this.maxPlayersInput.style.border = '2px solid #4a9eff';
         this.maxPlayersInput.style.borderRadius = '4px';
+        
+        // Add validation
+        this.maxPlayersInput.addEventListener('input', () => {
+            const inputValue = this.maxPlayersInput.value.trim();
+            if (inputValue === '' || inputValue === '0' || /^0+$/.test(inputValue)) {
+                this.maxPlayersInput.value = '';
+                this.maxPlayersInput.style.borderColor = '#ff6b6b';
+                return;
+            }
+            let value = parseInt(inputValue);
+            if (isNaN(value) || value < 2) {
+                this.maxPlayersInput.style.borderColor = '#ff6b6b';
+            } else if (value > 6) {
+                value = 6;
+                this.maxPlayersInput.value = '6';
+                this.maxPlayersInput.style.borderColor = '#4a9eff';
+            } else {
+                // Remove leading zeros
+                this.maxPlayersInput.value = value.toString();
+                this.maxPlayersInput.style.borderColor = '#4a9eff';
+            }
+        });
+        
+        this.maxPlayersInput.addEventListener('blur', () => {
+            const inputValue = this.maxPlayersInput.value.trim();
+            if (inputValue === '' || inputValue === '0' || /^0+$/.test(inputValue)) {
+                this.maxPlayersInput.value = '2';
+                this.maxPlayersInput.style.borderColor = '#4a9eff';
+                return;
+            }
+            let value = parseInt(inputValue);
+            if (isNaN(value) || value < 2) {
+                this.maxPlayersInput.value = '2';
+            } else if (value > 6) {
+                this.maxPlayersInput.value = '6';
+            } else {
+                // Remove leading zeros
+                this.maxPlayersInput.value = value.toString();
+            }
+            this.maxPlayersInput.style.borderColor = '#4a9eff';
+        });
+        
         document.body.appendChild(this.maxPlayersInput);
 
         // Create button
