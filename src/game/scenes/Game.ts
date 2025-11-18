@@ -22,6 +22,8 @@ export class Game extends Scene
     private soundManager!: SoundManager;
     private engineTrails!: Phaser.GameObjects.Group;
     private lastTrailTime: number = 0;
+    private leaveBtn!: Phaser.GameObjects.Rectangle;
+    private confirmDialog!: Phaser.GameObjects.Container;
 
     constructor ()
     {
@@ -68,6 +70,9 @@ export class Game extends Scene
 
         // Create UI
         this.createUI();
+        
+        // Create leave button
+        this.createLeaveButton();
 
         // Create particle effects
         this.createParticles();
@@ -131,6 +136,149 @@ export class Game extends Scene
         instructions.setOrigin(0.5);
         instructions.setDepth(100);
         instructions.setAlpha(0.7);
+    }
+
+    createLeaveButton() {
+        // Leave button in top right
+        this.leaveBtn = this.add.rectangle(944, 30, 120, 40, 0x666666, 0.8);
+        this.leaveBtn.setStrokeStyle(2, 0xffffff);
+        this.leaveBtn.setInteractive({ useHandCursor: true });
+        this.leaveBtn.setDepth(100);
+
+        const leaveText = this.add.text(944, 30, 'LEAVE', {
+            fontFamily: 'Arial',
+            fontSize: 18,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        });
+        leaveText.setOrigin(0.5);
+        leaveText.setDepth(101);
+
+        this.leaveBtn.on('pointerover', () => {
+            this.leaveBtn.setFillStyle(0x777777, 0.9);
+        });
+        this.leaveBtn.on('pointerout', () => {
+            this.leaveBtn.setFillStyle(0x666666, 0.8);
+        });
+        this.leaveBtn.on('pointerdown', () => {
+            this.showExitConfirmation();
+        });
+    }
+
+    showExitConfirmation() {
+        // Create overlay
+        const overlay = this.add.rectangle(512, 384, 1024, 768, 0x000000, 0.7);
+        overlay.setDepth(200);
+        overlay.setInteractive();
+
+        // Dialog container
+        this.confirmDialog = this.add.container(512, 384);
+        this.confirmDialog.setDepth(201);
+
+        // Dialog background
+        const bg = this.add.rectangle(0, 0, 400, 250, 0x1a1a3e, 0.95);
+        bg.setStrokeStyle(3, 0xff6b6b);
+        this.confirmDialog.add(bg);
+
+        // Title
+        const title = this.add.text(0, -80, 'Leave Game?', {
+            fontFamily: 'Arial Black',
+            fontSize: 32,
+            color: '#ff6b6b',
+            stroke: '#000000',
+            strokeThickness: 4
+        });
+        title.setOrigin(0.5);
+        this.confirmDialog.add(title);
+
+        // Message
+        const message = this.add.text(0, -20, 'Are you sure you want to\nleave the game?', {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2,
+            align: 'center'
+        });
+        message.setOrigin(0.5);
+        this.confirmDialog.add(message);
+
+        // Yes button
+        const yesBtn = this.add.rectangle(-80, 60, 120, 40, 0xff6b6b, 0.8);
+        yesBtn.setStrokeStyle(2, 0xffffff);
+        yesBtn.setInteractive({ useHandCursor: true });
+        this.confirmDialog.add(yesBtn);
+
+        const yesText = this.add.text(-80, 60, 'YES', {
+            fontFamily: 'Arial Black',
+            fontSize: 20,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        });
+        yesText.setOrigin(0.5);
+        this.confirmDialog.add(yesText);
+
+        yesBtn.on('pointerover', () => yesBtn.setFillStyle(0xff7b7b, 0.9));
+        yesBtn.on('pointerout', () => yesBtn.setFillStyle(0xff6b6b, 0.8));
+        yesBtn.on('pointerdown', () => {
+            this.exitGame();
+        });
+
+        // No button
+        const noBtn = this.add.rectangle(80, 60, 120, 40, 0x4a9eff, 0.8);
+        noBtn.setStrokeStyle(2, 0xffffff);
+        noBtn.setInteractive({ useHandCursor: true });
+        this.confirmDialog.add(noBtn);
+
+        const noText = this.add.text(80, 60, 'NO', {
+            fontFamily: 'Arial Black',
+            fontSize: 20,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        });
+        noText.setOrigin(0.5);
+        this.confirmDialog.add(noText);
+
+        noBtn.on('pointerover', () => noBtn.setFillStyle(0x5ab0ff, 0.9));
+        noBtn.on('pointerout', () => noBtn.setFillStyle(0x4a9eff, 0.8));
+        noBtn.on('pointerdown', () => {
+            this.closeExitConfirmation();
+        });
+
+        // Close on overlay click
+        overlay.on('pointerdown', () => {
+            this.closeExitConfirmation();
+        });
+    }
+
+    closeExitConfirmation() {
+        if (this.confirmDialog) {
+            this.confirmDialog.destroy();
+            this.confirmDialog = null as any;
+            // Remove overlay
+            this.children.list.forEach((child: any) => {
+                if (child.depth === 200 && child.fillColor === 0x000000) {
+                    child.destroy();
+                }
+            });
+        }
+    }
+
+    exitGame() {
+        // Pause physics
+        this.physics.pause();
+        
+        // Store score
+        this.registry.set('finalScore', this.score);
+        
+        // Fade out and return to menu
+        this.cameras.main.fadeOut(300, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('MainMenu');
+        });
     }
 
     createParticles() {
@@ -223,21 +371,9 @@ export class Game extends Scene
         // Play shoot sound
         this.soundManager.playShoot();
         
-        // Create enhanced bullet visual
-        const bullet = this.add.circle(this.player.x, this.player.y - 25, 6, 0xffff00, 1);
-        bullet.setStrokeStyle(2, 0xffffff);
-        bullet.setDepth(50);
-        
-        // Add glow effect
-        const glow = this.add.circle(this.player.x, this.player.y - 25, 8, 0xffff00, 0.3);
-        glow.setDepth(49);
-        this.tweens.add({
-            targets: glow,
-            alpha: 0,
-            scale: 1.5,
-            duration: 200,
-            onComplete: () => glow.destroy()
-        });
+        // Create bullet with player color (blue for single player)
+        const bulletColor = 0x4a9eff; // Player ship color
+        const bullet = SpaceshipGraphics.createBullet(this, this.player.x, this.player.y - 25, bulletColor);
         
         // Add physics body for collision detection
         this.physics.add.existing(bullet);
@@ -247,7 +383,6 @@ export class Game extends Scene
         
         // Store speed for manual movement
         (bullet as any).speed = -8;
-        (bullet as any).glow = glow;
         
         // Add to bullets group
         this.bullets.add(bullet);
@@ -320,7 +455,6 @@ export class Game extends Scene
         this.createExplosion(enemy.x, enemy.y, explosionColor);
         
         // Destroy bullet and enemy
-        if (bullet.glow) bullet.glow.destroy();
         bullet.destroy();
         enemy.destroy();
 

@@ -4,13 +4,11 @@
  */
 
 export class SoundManager {
-    private scene: Phaser.Scene;
     private audioContext: AudioContext | null = null;
     private soundsEnabled: boolean = true;
     private volume: number = 0.3;
 
-    constructor(scene: Phaser.Scene) {
-        this.scene = scene;
+    constructor(_scene: Phaser.Scene) {
         this.initAudio();
     }
 
@@ -38,6 +36,7 @@ export class SoundManager {
         
         oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
         oscillator.frequency.exponentialRampToValueAtTime(400, this.audioContext.currentTime + 0.1);
+        
         
         gainNode.gain.setValueAtTime(this.volume * 0.3, this.audioContext.currentTime);
         gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.1);

@@ -1,159 +1,352 @@
-# Phaser Vite TypeScript Template
+# Space Shooter - Multiplayer Game
 
-This is a Phaser 3 project template that uses Vite for bundling. It supports hot-reloading for quick development workflow, includes TypeScript support and scripts to generate production-ready builds.
+A beautiful, feature-rich space shooter game built with Phaser 3, TypeScript, and Socket.io. Battle enemies in single-player mode or compete with friends in real-time multiplayer matches!
 
-**[This Template is also available as a JavaScript version.](https://github.com/phaserjs/template-vite)**
+![Game Screenshot](screenshot.png)
 
-### Versions
+## 🎮 About the Game
 
-This template has been updated for:
+Space Shooter is an arcade-style top-down space shooter where you pilot a spaceship through waves of enemies. Destroy enemies to score points, avoid collisions to survive, and compete for the highest score!
 
-- [Phaser 3.90.0](https://github.com/phaserjs/phaser)
-- [Vite 6.3.1](https://github.com/vitejs/vite)
-- [TypeScript 5.7.2](https://github.com/microsoft/TypeScript)
+### Game Modes
 
-![screenshot](screenshot.png)
+- **Single Player**: Classic arcade mode - survive as long as possible and beat your high score
+- **Multiplayer**: Compete with up to 6 players in real-time matches with custom game timers
 
-## Requirements
+### Features
 
-[Node.js](https://nodejs.org) is required to install dependencies and run scripts via `npm`.
+✨ **Single Player Mode**
+- Smooth spaceship controls
+- Multiple enemy types with different behaviors
+- Progressive difficulty
+- Score tracking
+- Lives system
+- Beautiful particle effects and explosions
 
-## Available Commands
+🎯 **Multiplayer Mode**
+- Create or join game rooms with unique codes
+- Up to 6 players per room
+- Real-time synchronization
+- Competitive scoring (each player sees only their own score)
+- Timer-based or elimination-based game end
+- Final rankings with medals for top 3 players
+- Spectator mode for eliminated players
+- Host management with automatic transfer
+
+🎨 **Visual Features**
+- Detailed spaceship graphics
+- Animated starfield background
+- Particle explosion effects
+- Engine trails
+- Smooth animations and transitions
+- Camera shake effects
+
+🔊 **Audio**
+- Shooting sound effects
+- Explosion sounds
+- Hit feedback sounds
+- Programmatically generated audio (no external files needed)
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org) (v14 or higher)
+- npm (comes with Node.js)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd first-game
+   ```
+
+2. **Install client dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Install server dependencies**
+   ```bash
+   cd server
+   npm install
+   cd ..
+   ```
+
+### Running the Game
+
+#### Single Player Mode
+
+1. Start the client:
+   ```bash
+   npm run dev
+   ```
+
+2. Open your browser to `http://localhost:8080`
+
+3. Click "SINGLE PLAYER" and start playing!
+
+#### Multiplayer Mode
+
+1. **Start the server** (in one terminal):
+   ```bash
+   cd server
+   npm start
+   ```
+   The server will run on `http://localhost:3000`
+
+2. **Start the client** (in another terminal):
+   ```bash
+   npm run dev
+   ```
+
+3. Open `http://localhost:8080` in your browser
+
+4. Click "MULTIPLAYER" → "CREATE ROOM" or "JOIN ROOM"
+
+5. Share the room code with friends!
+
+#### Network Access (For Players on Different Devices)
+
+To allow players on your local network to join:
+
+1. **Start server** (already network-ready):
+   ```bash
+   cd server
+   npm start
+   ```
+
+2. **Start client with network access**:
+   ```bash
+   npm run dev-network
+   ```
+
+3. Find your IP address:
+   - **macOS/Linux**: `ifconfig | grep "inet " | grep -v 127.0.0.1`
+   - **Windows**: `ipconfig`
+
+4. Share the Network URL (e.g., `http://192.168.1.100:8080`) with other players
+
+5. Other players need to update `src/game/utils/NetworkManager.ts` with your IP:
+   ```typescript
+   constructor(serverUrl: string = 'http://YOUR_IP:3000')
+   ```
+
+See [NETWORK_SETUP.md](NETWORK_SETUP.md) for detailed network setup instructions.
+
+## 📁 Project Structure
+
+```
+first-game/
+├── server/                 # Node.js multiplayer server
+│   ├── server.js          # Socket.io server implementation
+│   ├── package.json       # Server dependencies
+│   └── README.md         # Server documentation
+├── src/
+│   ├── game/
+│   │   ├── scenes/        # Phaser game scenes
+│   │   │   ├── Boot.ts           # Initial loading scene
+│   │   │   ├── Preloader.ts      # Asset loading scene
+│   │   │   ├── MainMenu.ts        # Main menu with mode selection
+│   │   │   ├── Game.ts            # Single player game scene
+│   │   │   ├── GameOver.ts        # Single player game over
+│   │   │   ├── Lobby.ts           # Multiplayer lobby
+│   │   │   ├── MultiplayerGame.ts # Multiplayer game scene
+│   │   │   └── MultiplayerGameOver.ts # Multiplayer rankings
+│   │   ├── utils/
+│   │   │   ├── NetworkManager.ts      # Socket.io client wrapper
+│   │   │   ├── SoundManager.ts        # Audio management
+│   │   │   └── SpaceshipGraphics.ts   # Spaceship rendering utilities
+│   │   └── main.ts        # Game configuration
+│   └── main.ts            # Application entry point
+├── public/
+│   └── assets/            # Game assets (images, etc.)
+├── vite/                  # Vite configuration files
+├── package.json           # Client dependencies
+└── README.md             # This file
+```
+
+## 🎮 How to Play
+
+### Controls
+
+- **Arrow Keys**: Move your spaceship
+- **Spacebar**: Shoot bullets
+- **Mouse Click**: Navigate menus
+
+### Gameplay
+
+1. **Movement**: Use arrow keys to navigate your ship around the screen
+2. **Shooting**: Hold or tap spacebar to fire bullets at enemies
+3. **Scoring**: Destroy enemies to earn points:
+   - Small enemies (red): 10 points
+   - Medium enemies (orange): 20 points
+   - Large enemies (purple): 30 points
+4. **Lives**: You start with 3 lives. Lose a life when hit by an enemy
+5. **Game Over**: Game ends when you run out of lives
+
+### Multiplayer Rules
+
+- All players compete against shared enemies
+- Each player only sees their own score during the game
+- Game ends when:
+  - All players are eliminated, OR
+  - Timer runs out
+- Final rankings show all players' scores
+- Eliminated players enter spectator mode
+
+## 🛠️ Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm install` | Install project dependencies |
-| `npm run dev` | Launch a development web server |
-| `npm run build` | Create a production build in the `dist` folder |
-| `npm run dev-nolog` | Launch a development web server without sending anonymous data (see "About log.js" below) |
-| `npm run build-nolog` | Create a production build in the `dist` folder without sending anonymous data (see "About log.js" below) |
+| `npm install` | Install client dependencies |
+| `npm run dev` | Start development server (localhost only) |
+| `npm run dev-network` | Start development server (network accessible) |
+| `npm run build` | Create production build |
+| `cd server && npm start` | Start multiplayer server |
+| `cd server && npm run dev` | Start server with auto-reload |
 
-## Writing Code
+## 🏗️ Technologies Used
 
-After cloning the repo, run `npm install` from your project directory. Then, you can start the local development server by running `npm run dev`.
+- **Phaser 3.90.0** - Game framework
+- **TypeScript 5.7.2** - Type-safe JavaScript
+- **Vite 6.3.1** - Build tool and dev server
+- **Socket.io 4.7.2** - Real-time multiplayer networking
+- **Express** - Server framework
+- **Node.js** - Server runtime
 
-The local development server runs on `http://localhost:8080` by default. Please see the Vite documentation if you wish to change this, or add SSL support.
+## 📚 Documentation
 
-Once the server is running you can edit any of the files in the `src` folder. Vite will automatically recompile your code and then reload the browser.
+- **[MULTIPLAYER_SETUP.md](MULTIPLAYER_SETUP.md)** - Detailed multiplayer setup guide
+- **[NETWORK_SETUP.md](NETWORK_SETUP.md)** - Network access configuration
+- **[server/README.md](server/README.md)** - Server documentation
 
-## Template Project Structure
+## 🎯 Features in Detail
 
-We have provided a default project structure to get you started. This is as follows:
+### Single Player Features
+- Progressive difficulty (enemy spawn rate increases with score)
+- Score tracking
+- Lives system with visual feedback
+- Smooth controls and responsive gameplay
 
-## Template Project Structure
+### Multiplayer Features
+- **Room System**: Create rooms with unique codes or join existing ones
+- **Player Management**: 
+  - Custom player names
+  - Unique ship colors per player
+  - Ready system before game start
+- **Host Management**: 
+  - Host can start the game
+  - Automatic host transfer if host disconnects
+- **Game Configuration**:
+  - Customizable game timer (60-1800 seconds)
+  - Configurable max players (2-6)
+- **Real-time Synchronization**:
+  - Shared enemy spawning (host-controlled)
+  - Player movement sync
+  - Score updates
+  - Game state management
 
-We have provided a default project structure to get you started:
+## 🐛 Troubleshooting
 
-| Path                         | Description                                                |
-|------------------------------|------------------------------------------------------------|
-| `index.html`                 | A basic HTML page to contain the game.                     |
-| `public/assets`              | Game sprites, audio, etc. Served directly at runtime.      |
-| `public/style.css`           | Global layout styles.                                      |
-| `src/main.ts`                | Application bootstrap.                                     |
-| `src/game`                   | Folder containing the game code.                           |
-| `src/game/main.ts`           | Game entry point: configures and starts the game.          |
-| `src/game/scenes`            | Folder with all Phaser game scenes.                        | 
+### Server won't start
+- Make sure port 3000 is not in use
+- Check Node.js version: `node --version` (should be v14+)
+- Try a different port: `PORT=3001 npm start` (in server directory)
 
+### Can't connect to server
+- Verify server is running: `cd server && npm start`
+- Check browser console for errors
+- Ensure server URL in `NetworkManager.ts` matches your server
 
-## Handling Assets
+### Players not syncing
+- All players must be on the same network (for local play)
+- Check server logs for connection errors
+- Verify firewall allows ports 3000 and 8080
 
-Vite supports loading assets via JavaScript module `import` statements.
+### Blank screen in multiplayer
+- Check browser console for errors
+- Verify server is running
+- Check network connection
 
-This template provides support for both embedding assets and also loading them from a static folder. To embed an asset, you can import it at the top of the JavaScript file you are using it in:
+## 🚢 Deployment
 
-```js
-import logoImg from './assets/logo.png'
-```
+### Production Build
 
-To load static files such as audio files, videos, etc place them into the `public/assets` folder. Then you can use this path in the Loader calls within Phaser:
+1. **Build the client**:
+   ```bash
+   npm run build
+   ```
+   Output will be in the `dist` folder.
 
-```js
-preload ()
-{
-    //  This is an example of an imported bundled image.
-    //  Remember to import it at the top of this file
-    this.load.image('logo', logoImg);
+2. **Deploy client**: Upload `dist` folder contents to a static host:
+   - Netlify
+   - Vercel
+   - GitHub Pages
+   - Any static hosting service
 
-    //  This is an example of loading a static image
-    //  from the public/assets folder:
-    this.load.image('background', 'assets/bg.png');
-}
-```
+3. **Deploy server**: Deploy `server` folder to a Node.js host:
+   - Heroku
+   - Railway
+   - DigitalOcean
+   - AWS/GCP/Azure
 
-When you issue the `npm run build` command, all static assets are automatically copied to the `dist/assets` folder.
+4. **Update server URL**: Edit `src/game/utils/NetworkManager.ts` to point to your production server URL before building.
 
-## Deploying to Production
+## 🤝 Contributing
 
-After you run the `npm run build` command, your code will be built into a single bundle and saved to the `dist` folder, along with any other assets your project imported, or stored in the public assets folder.
+Contributions are welcome! Feel free to:
+- Report bugs
+- Suggest features
+- Submit pull requests
+- Improve documentation
 
-In order to deploy your game, you will need to upload *all* of the contents of the `dist` folder to a public facing web server.
+## 📝 License
 
-## Customizing the Template
+This project is open source and available under the [MIT License](LICENSE).
 
-### Vite
+## 🙏 Acknowledgments
 
-If you want to customize your build, such as adding plugin (i.e. for loading CSS or fonts), you can modify the `vite/config.*.mjs` file for cross-project changes, or you can modify and/or create new configuration files and target them in specific npm tasks inside of `package.json`. Please see the [Vite documentation](https://vitejs.dev/) for more information.
+- Built with [Phaser 3](https://phaser.io/)
+- Uses [Socket.io](https://socket.io/) for multiplayer
+- Template based on [Phaser Vite TypeScript Template](https://github.com/phaserjs/template-vite-ts)
 
-## About log.js
+## 📞 Support
 
-If you inspect our node scripts you will see there is a file called `log.js`. This file makes a single silent API call to a domain called `gryzor.co`. This domain is owned by Phaser Studio Inc. The domain name is a homage to one of our favorite retro games.
+For issues, questions, or contributions:
+- Open an issue on GitHub
+- Check the documentation files
+- Review the Phaser community resources
 
-We send the following 3 pieces of data to this API: The name of the template being used (vue, react, etc). If the build was 'dev' or 'prod' and finally the version of Phaser being used.
+---
 
-At no point is any personal data collected or sent. We don't know about your project files, device, browser or anything else. Feel free to inspect the `log.js` file to confirm this.
+**Enjoy the game! 🚀**
 
-Why do we do this? Because being open source means we have no visible metrics about which of our templates are being used. We work hard to maintain a large and diverse set of templates for Phaser developers and this is our small anonymous way to determine if that work is actually paying off, or not. In short, it helps us ensure we're building the tools for you.
+---
 
-However, if you don't want to send any data, you can use these commands instead:
+## 📄 Additional Notes
 
-Dev:
+### About log.js
 
-```bash
-npm run dev-nolog
-```
+This project includes a `log.js` file that sends anonymous usage data to Phaser Studio. This helps them understand template usage. You can disable it by:
 
-Build:
+- Using `npm run dev-nolog` or `npm run build-nolog`
+- Or removing the `log.js` file and updating `package.json` scripts
 
-```bash
-npm run build-nolog
-```
+### Development Tips
 
-Or, to disable the log entirely, simply delete the file `log.js` and remove the call to it in the `scripts` section of `package.json`:
+- Hot reload is enabled - changes in `src/` will automatically reload the browser
+- Check browser console (F12) for debugging information
+- Server logs will show connection status and room activity
+- Use `npm run dev-network` to test multiplayer on local network
 
-Before:
+### Asset Management
 
-```json
-"scripts": {
-    "dev": "node log.js dev & dev-template-script",
-    "build": "node log.js build & build-template-script"
-},
-```
+Assets can be loaded in two ways:
+- **Import directly**: `import logoImg from './assets/logo.png'`
+- **Public folder**: Place files in `public/assets/` and reference as `'assets/filename.png'`
 
-After:
+---
 
-```json
-"scripts": {
-    "dev": "dev-template-script",
-    "build": "build-template-script"
-},
-```
-
-Either of these will stop `log.js` from running. If you do decide to do this, please could you at least join our Discord and tell us which template you're using! Or send us a quick email. Either will be super-helpful, thank you.
-
-## Join the Phaser Community!
-
-We love to see what developers like you create with Phaser! It really motivates us to keep improving. So please join our community and show-off your work 😄
-
-**Visit:** The [Phaser website](https://phaser.io) and follow on [Phaser Twitter](https://twitter.com/phaser_)<br />
-**Play:** Some of the amazing games [#madewithphaser](https://twitter.com/search?q=%23madewithphaser&src=typed_query&f=live)<br />
-**Learn:** [API Docs](https://newdocs.phaser.io), [Support Forum](https://phaser.discourse.group/) and [StackOverflow](https://stackoverflow.com/questions/tagged/phaser-framework)<br />
-**Discord:** Join us on [Discord](https://discord.gg/phaser)<br />
-**Code:** 2000+ [Examples](https://labs.phaser.io)<br />
-**Read:** The [Phaser World](https://phaser.io/community/newsletter) Newsletter<br />
-
-Created by [Phaser Studio](mailto:support@phaser.io). Powered by coffee, anime, pixels and love.
-
-The Phaser logo and characters are &copy; 2011 - 2025 Phaser Studio Inc.
-
-All rights reserved.
-# phaser-game-demo
+**Made with ❤️ using Phaser 3**

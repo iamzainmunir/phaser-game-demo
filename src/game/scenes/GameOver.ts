@@ -120,6 +120,45 @@ export class GameOver extends Scene
             repeat: -1
         });
 
+        // Back button (top-left with proper spacing)
+        const backBtnContainer = this.add.container(100, 50);
+        backBtnContainer.setDepth(200);
+        
+        const backBtn = this.add.rectangle(0, 0, 150, 50, 0x666666, 0.9);
+        backBtn.setStrokeStyle(2, 0xffffff);
+        backBtn.setInteractive({ useHandCursor: true });
+        backBtnContainer.add(backBtn);
+
+        const backArrow = this.add.text(-40, 0, '←', {
+            fontFamily: 'Arial Black',
+            fontSize: 24,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5);
+        backBtnContainer.add(backArrow);
+
+        const backText = this.add.text(30, 0, 'BACK', {
+            fontFamily: 'Arial Black',
+            fontSize: 20,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        }).setOrigin(0.5);
+        backBtnContainer.add(backText);
+
+        backBtn.on('pointerover', () => {
+            backBtn.setFillStyle(0x777777, 1);
+            backBtnContainer.setScale(1.05);
+        });
+        backBtn.on('pointerout', () => {
+            backBtn.setFillStyle(0x666666, 0.9);
+            backBtnContainer.setScale(1);
+        });
+        backBtn.on('pointerdown', () => {
+            this.returnToMenu();
+        });
+
         // Create some particles for effect
         this.createParticles();
 

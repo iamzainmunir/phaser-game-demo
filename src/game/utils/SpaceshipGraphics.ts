@@ -159,5 +159,37 @@ export class SpaceshipGraphics {
         trail.setDepth(5);
         return trail;
     }
+
+    /**
+     * Create a bullet shape (pointed/arrow-like)
+     */
+    static createBullet(scene: Phaser.Scene, x: number, y: number, color: number = 0xffff00): Phaser.GameObjects.Container {
+        const bullet = scene.add.container(x, y);
+        
+        // Main bullet body (pointed shape)
+        const body = scene.add.graphics();
+        body.fillStyle(color, 1);
+        // Create a pointed bullet shape (triangle pointing up)
+        body.fillTriangle(0, -8, -4, 4, 4, 4);
+        body.lineStyle(1, 0xffffff, 1);
+        body.strokeTriangle(0, -8, -4, 4, 4, 4);
+        bullet.add(body);
+        
+        // Glow effect
+        const glow = scene.add.graphics();
+        glow.fillStyle(color, 0.4);
+        glow.fillCircle(0, 0, 6);
+        bullet.add(glow);
+        glow.setDepth(-1);
+        
+        // Core bright center
+        const core = scene.add.graphics();
+        core.fillStyle(0xffffff, 0.8);
+        core.fillCircle(0, -2, 2);
+        bullet.add(core);
+        
+        bullet.setDepth(50);
+        return bullet;
+    }
 }
 

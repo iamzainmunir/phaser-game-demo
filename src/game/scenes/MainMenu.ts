@@ -63,32 +63,66 @@ export class MainMenu extends Scene
             ease: 'Sine.easeInOut'
         });
 
-        // Start instruction
-        this.startText = this.add.text(512, 550, 'Click or Press Any Key to Start', {
-            fontFamily: 'Arial',
-            fontSize: 24,
+        // Single Player button
+        const singlePlayerBtn = this.add.rectangle(512, 480, 300, 60, 0x4a9eff, 0.8);
+        singlePlayerBtn.setStrokeStyle(3, 0xffffff);
+        singlePlayerBtn.setInteractive({ useHandCursor: true });
+        
+        const singlePlayerText = this.add.text(512, 480, 'SINGLE PLAYER', {
+            fontFamily: 'Arial Black',
+            fontSize: 28,
             color: '#ffffff',
             stroke: '#000000',
-            strokeThickness: 3,
-            align: 'center'
+            strokeThickness: 3
         }).setOrigin(0.5);
-        this.startText.setAlpha(0);
+        singlePlayerText.setAlpha(0);
         
         this.tweens.add({
-            targets: this.startText,
+            targets: singlePlayerText,
             alpha: 1,
             duration: 600,
             delay: 800
         });
 
-        // Blinking effect
+        singlePlayerBtn.on('pointerover', () => {
+            singlePlayerBtn.setFillStyle(0x5ab0ff, 0.9);
+        });
+        singlePlayerBtn.on('pointerout', () => {
+            singlePlayerBtn.setFillStyle(0x4a9eff, 0.8);
+        });
+        singlePlayerBtn.on('pointerdown', () => {
+            this.startSinglePlayer();
+        });
+
+        // Multiplayer button
+        const multiplayerBtn = this.add.rectangle(512, 560, 300, 60, 0xff6b6b, 0.8);
+        multiplayerBtn.setStrokeStyle(3, 0xffffff);
+        multiplayerBtn.setInteractive({ useHandCursor: true });
+        
+        const multiplayerText = this.add.text(512, 560, 'MULTIPLAYER', {
+            fontFamily: 'Arial Black',
+            fontSize: 28,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0.5);
+        multiplayerText.setAlpha(0);
+        
         this.tweens.add({
-            targets: this.startText,
-            alpha: { from: 1, to: 0.5 },
-            duration: 1000,
-            yoyo: true,
-            repeat: -1,
-            delay: 1400
+            targets: multiplayerText,
+            alpha: 1,
+            duration: 600,
+            delay: 900
+        });
+
+        multiplayerBtn.on('pointerover', () => {
+            multiplayerBtn.setFillStyle(0xff7b7b, 0.9);
+        });
+        multiplayerBtn.on('pointerout', () => {
+            multiplayerBtn.setFillStyle(0xff6b6b, 0.8);
+        });
+        multiplayerBtn.on('pointerdown', () => {
+            this.startMultiplayer();
         });
 
         // Instructions
@@ -101,15 +135,6 @@ export class MainMenu extends Scene
             align: 'center'
         }).setOrigin(0.5);
         instructions.setAlpha(0.7);
-
-        // Input handlers
-        this.input.once('pointerdown', () => {
-            this.startGame();
-        });
-
-        this.input.keyboard!.once('keydown', () => {
-            this.startGame();
-        });
     }
 
     createStarfield() {
@@ -134,10 +159,17 @@ export class MainMenu extends Scene
         });
     }
 
-    startGame() {
+    startSinglePlayer() {
         this.cameras.main.fadeOut(300, 0, 0, 0);
         this.cameras.main.once('camerafadeoutcomplete', () => {
             this.scene.start('Game');
+        });
+    }
+
+    startMultiplayer() {
+        this.cameras.main.fadeOut(300, 0, 0, 0);
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('Lobby');
         });
     }
 }
